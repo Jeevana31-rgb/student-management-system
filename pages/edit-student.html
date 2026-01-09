@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Edit Student - Student Management System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+/* ...same styles as add-student page... */
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f6f9}
+.card{width:420px;background:#fff;padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.08)}
+h2{margin-bottom:8px}
+.form-row{margin-bottom:12px}
+input,select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px}
+.actions{display:flex;gap:10px;margin-top:12px;justify-content:flex-end}
+.btn-primary{background:#2563eb;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+.btn-secondary{background:#9ca3af;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+.msg{display:none;margin-bottom:8px;padding:10px;border-radius:8px;font-size:14px}
+.msg.error{background:#ffecec;color:#7f1d1d}
+.msg.success{background:#e6fffa;color:#065f46}
+</style>
+</head>
+<body>
+<div class="card" role="main">
+    <h2>Edit Student</h2>
+    <div id="form-msg" class="msg" role="status" aria-live="polite"></div>
+
+    <div class="form-row"><input id="name" type="text" placeholder="Full Name" required></div>
+    <div class="form-row"><input id="email" type="email" placeholder="Email" required></div>
+    <div class="form-row"><input id="age" type="number" min="1" placeholder="Age" required></div>
+    
+    <div class="form-row">
+        <select id="course" required>
+            <option value="">Select Course</option>
+            <!-- options populated by script -->
+        </select>
+    </div>
+
+    <div class="actions">
+        <button id="cancel" class="btn-secondary" type="button">Cancel</button>
+        <button id="update" class="btn-primary" type="button">Update</button>
+    </div>
+</div>
+
+<script>
+(function(){
+    const STORAGE_KEY = 'sms_students';
+    const COURSES_KEY = 'sms_courses';
+    const q = new URLSearchParams(location.search);
+    const id = Number(q.get('id') || 0);
+    const nameEl = document.getElementById('name');
+    const emailEl = document.getElementById('email');
+    const ageEl = document.getElementById('age');
+    const courseEl = document.getElementById('course');
+    const msgEl = document.getElementById('form-msg');
+    const updateBtn = document.getElementById('update');
+    const cancelBtn = document.getElementById('cancel');
+
+    function showMsg(text,type='error'){ msgEl.textContent = text; msgEl.className = 'msg ' + type; msgEl.style.display = 'block'; }
+    function clearMsg(){ msgEl.textContent=''; msgEl.style.display='none'; }
+    function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e||''); }
+
+    function loadCourses(){
+        try { return JSON.parse(localStorage.getItem(COURSES_KEY) || '[]'); } catch { return []; }
+    }
+
+    function populateCourseSelect(selected){
+        const list = loadCourses();
+        courseEl.innerHTML = '<option value="">Select Course</option>';
+        list.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.name;
+            opt.textContent = c.name;
+            courseEl.appendChild(opt);
+        });
+        // If student's course is not in list, add it so it's preserved
+        if (selected && !Array.from(courseEl.options).some(o => o.value === selected)) {
+            const opt = document.createElement('option');
+            opt.value = selected;
+            opt.textContent = selected + ' (removed from course list)';
+            courseEl.appendChild(opt);
+        }
+        if (selected) courseEl.value = selected;
+    }
+
+    window.addEventListener('storage', (e)=> { if (e.key === COURSES_KEY) populateCourseSelect(courseEl.value || null); });
+
+    function load(){
+        const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const s = list.find(x => x.id === id);
+        if (!s) {
+            showMsg('Student not found.', 'error');
+            updateBtn.disabled = true;
+            return;
+        }
+        nameEl.value = s.name;
+        emailEl.value = s.email;
+        ageEl.value = s.age;
+        // populate courses first, preserving the student's current course
+        populateCourseSelect(s.course);
+    }
+
+    function update(){
+        clearMsg();
+        const name = nameEl.value.trim();
+        const email = emailEl.value.trim();
+        const age = Number(ageEl.value);
+        const course = courseEl.value;
+        if (!name) return showMsg('Full name is required.', 'error');
+        if (!validEmail(email)) return showMsg('Enter a valid email.', 'error');
+        if (!Number.isInteger(age) || age <= 0) return showMsg('Enter a valid age.', 'error');
+        if (!course) return showMsg('Please select a course.', 'error');
+
+        const list = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        const idx = list.findIndex(x => x.id === id);
+        if (idx === -1) return showMsg('Student not found.', 'error');
+
+        list[idx] = { id, name, email, age, course };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+        showMsg('Student updated successfully.', 'success');
+
+        setTimeout(()=> { window.location.href = 'students.html'; }, 900);
+    }
+
+    updateBtn.addEventListener('click', update);
+    cancelBtn.addEventListener('click', ()=> location.href = 'students.html');
+
+    load();
+    // also populate course list on storage change (in case courses page changes)
+    // already handled via 'storage' listener above
+})();
+</script>
+</body>
+</html>

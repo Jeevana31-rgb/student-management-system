@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Logging out...</title>
+<style>
+/* Minimal centered message */
+body{margin:0;font-family:Segoe UI,Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#141e30,#243b55);color:#fff}
+.card{background:rgba(255,255,255,0.06);padding:20px 24px;border-radius:10px;text-align:center}
+</style>
+</head>
+<body>
+<div class="card">
+    <p>Logging out…</p>
+</div>
+
+<script>
+/* Clear session and redirect back to login with a message */
+try {
+    sessionStorage.removeItem('sms_logged_in');
+    sessionStorage.setItem('sms_logout_msg', 'You have been logged out.');
+} catch(e) { /* ignore */ }
+setTimeout(() => { location.href = 'index.html'; }, 300);
+</script>
+</body>
+</html>

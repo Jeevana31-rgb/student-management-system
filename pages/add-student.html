@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Add Student - Student Management System</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Segoe UI",Arial,sans-serif}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#f4f6f9}
+.card{width:420px;background:#fff;padding:24px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.08)}
+h2{margin-bottom:8px}
+.form-row{margin-bottom:12px}
+input,select{width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;font-size:14px}
+.actions{display:flex;gap:10px;margin-top:12px;justify-content:flex-end}
+.btn-primary{background:#2563eb;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+.btn-secondary{background:#9ca3af;color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
+.msg{display:none;margin-bottom:8px;padding:10px;border-radius:8px;font-size:14px}
+.msg.error{background:#ffecec;color:#7f1d1d}
+.msg.success{background:#e6fffa;color:#065f46}
+/* Hide error initially */
+.name-error{
+    display:none;
+    font-size:13px;
+    color:#dc2626;
+    margin-top:4px;
+}
+
+/* Show error ONLY when user types something invalid */
+#name:not(:placeholder-shown):invalid{
+    border-color:#dc2626;
+}
+
+#name:not(:placeholder-shown):invalid + .name-error{
+    display:block;
+}
+
+
+</style>
+</head>
+<body>
+<div class="card" role="main">
+    <h2>Add Student</h2>
+    <div id="form-msg" class="msg" role="status" aria-live="polite"></div>
+
+    <div class="form-row">
+    <input
+        id="name"
+        type="text"
+        placeholder="Full Name"
+        pattern="[A-Za-z.\s]+"
+        title="Enter only alphabets."
+        required
+    >
+    <span class="name-error">Enter only alphabets.</span>
+</div>
+
+
+    <div class="form-row"><input id="email" type="email" placeholder="Email" required></div>
+    <div class="form-row"><input id="age" type="number" min="1" placeholder="Age" required></div>
+    <div class="form-row">
+       
+    </div>
+    <div class="form-row">
+        <select id="course" required>
+            <option value="">Select Course</option>
+            <!-- options populated by script -->
+        </select>
+    </div>
+
+    <div class="actions">
+        <button id="cancel" class="btn-secondary" type="button">Cancel</button>
+        <button id="save" class="btn-primary" type="button">Save</button>
+    </div>
+</div>
+
+<script>
+(function(){
+    const STORAGE_KEY = 'sms_students';
+    const COURSES_KEY = 'sms_courses';
+    const nameEl = document.getElementById('name');
+    const emailEl = document.getElementById('email');
+    const ageEl = document.getElementById('age');
+    const courseEl = document.getElementById('course');
+    const msgEl = document.getElementById('form-msg');
+    const saveBtn = document.getElementById('save');
+    const cancelBtn = document.getElementById('cancel');
+
+    function loadCourses(){
+        try { return JSON.parse(localStorage.getItem(COURSES_KEY) || '[]'); } catch { return []; }
+    }
+
+    function populateCourseSelect(){
+        const list = loadCourses();
+        courseEl.innerHTML = '<option value="">Select Course</option>';
+        if (!list.length) {
+            showMsg('No courses available. Add courses first from Courses page.', 'error');
+            saveBtn.disabled = true;
+            return;
+        }
+        list.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.name;
+            opt.textContent = c.name;
+            courseEl.appendChild(opt);
+        });
+        saveBtn.disabled = false;
+        clearMsg();
+    }
+
+    // Update list when courses change in other tabs
+    window.addEventListener('storage', (e)=> { if (e.key === COURSES_KEY) populateCourseSelect(); });
+
+    function showMsg(text,type='error'){ msgEl.textContent = text; msgEl.className = 'msg ' + type; msgEl.style.display = 'block'; }
+    function clearMsg(){ msgEl.textContent=''; msgEl.style.display='none'; }
+
+    function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e||''); }
+
+    function save(){
+        clearMsg();
+        const name = nameEl.value.trim();
+        const email = emailEl.value.trim();
+        const age = Number(ageEl.value);
+        const course = courseEl.value;
+
+        // ensure a course is selected
+        if (!course) return showMsg('Please select a course from the list.', 'error');
+
+        if (!name) return showMsg('Full name is required.', 'error');
+        if (!validEmail(email)) return showMsg('Enter a valid email.', 'error');
+        if (!Number.isInteger(age) || age <= 0) return showMsg('Enter a valid age.', 'error');
+
+        const users = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+        users.push({ id: Date.now(), name, email, age, course });
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+        showMsg('Student saved successfully.', 'success');
+
+        setTimeout(()=> { window.location.href = 'students.html'; }, 900);
+    }
+
+    // initial population of courses
+    populateCourseSelect();
+
+    saveBtn.addEventListener('click', save);
+    cancelBtn.addEventListener('click', function(){ window.location.href = 'students.html'; });
+})();
+</script>
+</body>
+</html>

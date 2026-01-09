@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Management System - Students</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body{
+    background:#f4f6f9;
+}
+
+/* Top Navbar */
+.navbar{
+    height:60px;
+    background:#1f2937;
+    color:white;
+    display:flex;
+    align-items:center;
+    padding:0 30px;
+    font-size:22px;
+    font-weight:600;
+}
+
+/* Layout */
+.wrapper{
+    display:flex;
+    height:calc(100vh - 60px);
+}
+
+/* Sidebar */
+.sidebar{
+    width:220px;
+    background:#111827;
+    padding-top:20px;
+}
+
+.sidebar a{
+    display:block;
+    padding:15px 25px;
+    color:#d1d5db;
+    text-decoration:none;
+    font-size:16px;
+}
+
+.sidebar a:hover,
+.sidebar a.active{
+    background:#1f2937;
+    color:white;
+}
+
+/* Main Content */
+.main{
+    flex:1;
+    padding:30px;
+}
+
+/* Header Row */
+.header-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.header-row h1{
+    font-size:28px;
+}
+
+.add-btn{
+    padding:10px 18px;
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:14px;
+}
+
+.add-btn:hover{
+    background:#1d4ed8;
+}
+
+/* Table */
+.table-container{
+    background:white;
+    border-radius:12px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+    overflow-x:auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th, td{
+    padding:14px 16px;
+    text-align:left;
+}
+
+th{
+    background:#f9fafb;
+    color:#374151;
+    font-weight:600;
+    border-bottom:2px solid #e5e7eb;
+}
+
+td{
+    border-bottom:1px solid #e5e7eb;
+    color:#374151;
+}
+
+/* Hover Effect */
+tbody tr:hover{
+    background:#f1f5f9;
+}
+
+/* Action Buttons */
+.action-btn{
+    padding:6px 12px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.edit{
+    background:#22c55e;
+    color:white;
+}
+
+.delete{
+    background:#ef4444;
+    color:white;
+}
+
+.edit:hover{background:#16a34a;}
+.delete:hover{background:#dc2626;}
+
+/* Modal / form styles */
+.modal { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.4); z-index:60; }
+.hidden { display:none; }
+.modal-card{ background:#fff; padding:18px; border-radius:10px; width:380px; box-shadow:0 10px 30px rgba(0,0,0,0.15); color:#111; }
+.modal-card h3{ margin:0 0 6px; }
+
+/* Delete (danger) button */
+.delete { background:#ef4444; color:white; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; }
+.delete:hover { background:#dc2626; }
+
+/* Responsive */
+@media(max-width:900px){
+    th, td{
+        font-size:14px;
+        padding:10px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- Top Navigation -->
+<div class="navbar">
+    Student Management System
+</div>
+
+<div class="wrapper">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="dashboard.html">📊 Dashboard</a>
+        <a href="students.html" class="active">👨‍🎓 Students</a>
+        <a href="courses.html" id="nav-courses">📚 Courses</a>
+        <a href="logout.html">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main">
+
+        <!-- Header -->
+        <div class="header-row">
+            <h1>Student List</h1>
+            <a href="add-student.html" id="add-student-btn" class="add-btn">➕ Add Student</a>
+        </div>
+
+        <!-- Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Age</th>
+                        <th>Course</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="students-tbody">
+                    <tr>
+                        <td>Jeevana A</td>
+                        <td>jeevana@gmail.com</td>
+                        <td>22</td>
+                        <td>MCA</td>
+                        <td>
+                            <button class="action-btn edit-btn" data-id="1">Edit</button>
+                            <button class="action-btn delete-btn" data-id="1">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Rahul Kumar</td>
+                        <td>rahul@gmail.com</td>
+                        <td>21</td>
+                        <td>BCA</td>
+                        <td>
+                            <button class="action-btn edit-btn" data-id="2">Edit</button>
+                            <button class="action-btn delete-btn" data-id="2">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Ananya Sharma</td>
+                        <td>ananya@gmail.com</td>
+                        <td>23</td>
+                        <td>MSc IT</td>
+                        <td>
+                            <button class="action-btn edit-btn" data-id="3">Edit</button>
+                            <button class="action-btn delete-btn" data-id="3">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- DELETE CONFIRMATION MODAL -->
+        <div id="confirm-delete-modal" class="modal hidden" aria-hidden="true">
+            <div class="modal-card">
+                <h3>Confirm delete</h3>
+                <p style="margin-top:8px">Are you sure you want to delete this student?</p>
+                <div style="display:flex;gap:10px;margin-top:14px;justify-content:flex-end">
+                    <button id="cancel-delete-btn" class="action-btn" style="background:#9ca3af;color:#fff">Cancel</button>
+                    <button id="confirm-delete-btn" class="delete" style="background:#ef4444">Yes, Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- small top message area -->
+        <div id="top-msg" style="position:fixed;top:72px;right:20px;display:none;padding:10px 14px;border-radius:8px;background:#e6fffa;color:#065f46;box-shadow:0 6px 20px rgba(0,0,0,0.06);z-index:80"></div>
+
+    </div>
+</div>
+
+<script>
+// Student list logic (updated to use edit page & delete confirmation modal)
+(function(){
+    const STORAGE_KEY = 'sms_students';
+    const tbody = document.getElementById('students-tbody');
+    const confirmModal = document.getElementById('confirm-delete-modal');
+    const confirmBtn = document.getElementById('confirm-delete-btn');
+    const cancelBtn = document.getElementById('cancel-delete-btn');
+    const topMsg = document.getElementById('top-msg');
+
+    let pendingDeleteId = null;
+
+    function loadStudents(){
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) {
+            const seed = [
+                {id: Date.now() - 3000, name:'Jeevana A', email:'jeevana@gmail.com', age:22, course:'MCA'},
+                {id: Date.now() - 2000, name:'Rahul Kumar', email:'rahul@gmail.com', age:21, course:'BCA'},
+                {id: Date.now() - 1000, name:'Ananya Sharma', email:'ananya@gmail.com', age:23, course:'MSc IT'},
+            ];
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(seed));
+            return seed;
+        }
+        try { return JSON.parse(raw) || []; } catch { return []; }
+    }
+
+    function saveStudents(list){ localStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+    function render(){
+        const students = loadStudents();
+        tbody.innerHTML = students.map(s => `
+            <tr data-id="${s.id}">
+                <td>${escapeHtml(s.name)}</td>
+                <td>${escapeHtml(s.email)}</td>
+                <td>${s.age}</td>
+                <td>${escapeHtml(s.course)}</td>
+                <td>
+                    <button class="action-btn edit-btn" data-id="${s.id}">Edit</button>
+                    <button class="action-btn delete-btn" data-id="${s.id}">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function showDeleteModal(id){
+        pendingDeleteId = id;
+        confirmModal.classList.remove('hidden');
+        confirmModal.setAttribute('aria-hidden','false');
+    }
+    function hideDeleteModal(){
+        pendingDeleteId = null;
+        confirmModal.classList.add('hidden');
+        confirmModal.setAttribute('aria-hidden','true');
+    }
+
+    function showTopMsg(text, timeout=1500){
+        topMsg.textContent = text;
+        topMsg.style.display = 'block';
+        setTimeout(()=> topMsg.style.display = 'none', timeout);
+    }
+
+    tbody.addEventListener('click', function(e){
+        const edit = e.target.closest('.edit-btn');
+        if (edit) {
+            const id = encodeURIComponent(edit.getAttribute('data-id'));
+            window.location.href = `edit-student.html?id=${id}`;
+            return;
+        }
+        const del = e.target.closest('.delete-btn');
+        if (del) {
+            const id = Number(del.getAttribute('data-id'));
+            showDeleteModal(id);
+            return;
+        }
+    });
+
+    confirmBtn.addEventListener('click', function(){
+        if (pendingDeleteId == null) return hideDeleteModal();
+        const students = loadStudents().filter(s => s.id !== pendingDeleteId);
+        saveStudents(students);
+        render();
+        hideDeleteModal();
+        showTopMsg('Student deleted.');
+    });
+
+    cancelBtn.addEventListener('click', hideDeleteModal);
+
+    // helper
+    function escapeHtml(str){ return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); }); }
+
+    // initial render
+    render();
+})();
+</script>
+
+</body>
+</html>
