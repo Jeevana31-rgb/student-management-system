@@ -40,5 +40,4 @@ PROJECT/
 │   └── students.html         # Student list and management
 │
 ├── README.md                 # Project documentation
-└── .gitignore                # Git ignored files
 ---
