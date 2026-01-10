@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Management System - Login</title>
+<link rel="stylesheet" href="style.css">
+<style>
+body{
+    margin:0;
+    font-family:Segoe UI;
+    background:linear-gradient(135deg,#141e30,#243b55);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    color:white;
+    align:center;
+}
+.features{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+.feature{
+    background:rgba(255,255,255,0.15);
+    padding:10px 12px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:500;
+    backdrop-filter:blur(6px);
+    white-space:nowrap;
+}
+
+.container{
+    width:1000px;
+    display:flex;
+    gap:40px;
+    align-items:center;   /* vertical center */
+    justify-content:space-between;
+}
+.left h1{font-size:42px;}
+.stats{display:flex;gap:30px;margin-top:30px;}
+.stat{
+    background:rgba(255,255,255,0.15);
+    padding:20px 30px;
+    border-radius:15px;
+    text-align:center;
+}
+
+.form-box{
+    background:rgba(255,255,255,0.15);
+    padding:30px;
+    border-radius:20px;
+    backdrop-filter:blur(12px);
+    width:350px;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+}
+
+input,button{
+    width:100%;
+    padding:10px;
+    margin-bottom:12px;
+    border-radius:8px;
+    border:none;
+}
+button{
+    background:#00d4ff;
+    font-weight:bold;
+    cursor:pointer;
+}
+.links{text-align:center;}
+.links a{color:#00d4ff;text-decoration:none;font-size:14px;}
+.msg {
+    display: none;
+    margin-bottom: 12px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+.msg.success{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:rgba(0, 255, 200, 0.18);
+    color:#eafffa;
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:14px;
+    backdrop-filter:blur(10px);
+    animation:fadePulse 0.6s ease-in-out;
+}
+
+/* Spinner using pseudo element */
+.msg.success::before{
+    content:"";
+    width:18px;
+    height:18px;
+    border:3px solid rgba(255,255,255,0.3);
+    border-top:3px solid #00ffd5;
+    border-radius:50%;
+    animation:spin 1s linear infinite;
+}
+@keyframes spin{
+    to{ transform:rotate(360deg); }
+}
+
+@keyframes fadePulse{
+    from{
+        opacity:0;
+        transform:translateY(-6px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+.msg.error { background:#ffecec; color:#7f1d1d; }
+.msg.success { background:#e6fffa; color:#065f46; }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<div class="left">
+    <h1>Student Management System</h1>
+    <p>A secure platform that provides a comprehensive platform for tracking student <br>
+         progress ,managing academic records with following features :</p>
+    <div class="features"> 
+    <div class="feature">🎓 Student Registration</div>
+    <div class="feature">📚 Course Management</div>
+    <div class="feature">🔐 Secure Login</div>
+</div>
+
+    <div class="stats">
+        <div class="stat"><h2>100+</h2><p>Total Students</p></div>
+        <div class="stat"><h2>8+</h2><p>Total Courses</p></div>
+    </div>
+</div>
+
+<div class="form-box">
+    <h3>Login</h3>
+    {% if messages %}
+        {% for message in messages %}
+        <div class="msg {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    <form method="POST" id="login-form">
+        {% csrf_token %}
+        <input id="login-email" name="email" type="email" placeholder="Email" required>
+        <input id="login-password" name="password" type="password" placeholder="Password" required>
+        <button type="submit" id="login-btn">Login</button>
+    </form>
+    <div id="login-msg" class="msg"></div>
+    <div class="links">
+        <a href="{% url 'signup' %}">Sign Up</a> |
+        <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+    </div>
+</div>
+
+</div>
+
+<script>
+(function () {
+    const loginForm = document.getElementById('login-form');
+    const loginMsg = document.getElementById('login-msg');
+
+    function showMsg(el, text, type='error'){ 
+        el.textContent = text; 
+        el.className = 'msg ' + type; 
+        el.style.display = 'block'; 
+    }
+    function clearMsg(el){ 
+        el.textContent = ''; 
+        el.style.display = 'none'; 
+    }
+
+    loginForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearMsg(loginMsg);
+        
+        const formData = new FormData(loginForm);
+        
+        fetch('/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showMsg(loginMsg, 'Logging in...', 'success');
+                setTimeout(() => {
+                    window.location.href = data.redirect || '/dashboard/';
+                }, 700);
+            } else {
+                showMsg(loginMsg, data.message || 'Login failed', 'error');
+            }
+        })
+        .catch(error => {
+            showMsg(loginMsg, 'An error occurred. Please try again.', 'error');
+        });
+    });
+})();
+</script>
+
+</body>
+</html>

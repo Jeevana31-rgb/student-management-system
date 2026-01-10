@@ -1,0 +1,173 @@
+===============================================
+STUDENT MANAGEMENT SYSTEM - QUICK SETUP GUIDE
+===============================================
+
+Follow these steps to get your Student Management System up and running:
+
+═══════════════════════════════════════════════════════════════════
+STEP 1: INSTALL MYSQL
+═══════════════════════════════════════════════════════════════════
+
+1. Download MySQL Server from: https://dev.mysql.com/downloads/mysql/
+2. Install MySQL Server
+3. During installation, set a ROOT PASSWORD (remember this!)
+4. Default port is 3306 (keep this)
+
+═══════════════════════════════════════════════════════════════════
+STEP 2: CREATE DATABASE
+═══════════════════════════════════════════════════════════════════
+
+Open MySQL Workbench or Command Line and run:
+
+    CREATE DATABASE studentmgt_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+Or use MySQL Workbench GUI:
+- Open MySQL Workbench
+- Connect to your server
+- Click "Create Schema" icon
+- Name: studentmgt_db
+- Charset: utf8mb4
+- Click Apply
+
+═══════════════════════════════════════════════════════════════════
+STEP 3: INSTALL PYTHON PACKAGES
+═══════════════════════════════════════════════════════════════════
+
+Open Command Prompt/Terminal in the 'studentmgt' folder and run:
+
+    pip install -r requirements.txt
+
+If mysqlclient fails on Windows:
+- Download wheel from: https://www.lfd.uci.edu/~gohlke/pythonlibs/#mysqlclient
+- Install: pip install mysqlclient-*.whl
+
+═══════════════════════════════════════════════════════════════════
+STEP 4: CONFIGURE DATABASE
+═══════════════════════════════════════════════════════════════════
+
+Open: studentmgt/settings.py
+
+Find the DATABASES section and update:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'studentmgt_db',
+            'USER': 'root',
+            'PASSWORD': 'YOUR_MYSQL_PASSWORD_HERE',  # ← CHANGE THIS!
+            'HOST': 'localhost',
+            'PORT': '3306',
+        }
+    }
+
+Replace 'YOUR_MYSQL_PASSWORD_HERE' with your actual MySQL password!
+
+═══════════════════════════════════════════════════════════════════
+STEP 5: CREATE DATABASE TABLES
+═══════════════════════════════════════════════════════════════════
+
+Run these commands in order:
+
+    python manage.py makemigrations
+    python manage.py migrate
+
+This creates all necessary tables in MySQL.
+
+═══════════════════════════════════════════════════════════════════
+STEP 6: CREATE ADMIN USER
+═══════════════════════════════════════════════════════════════════
+
+Run:
+
+    python manage.py createsuperuser
+
+Enter:
+- Email address (this will be your username)
+- Username (can be your name)
+- Password (and confirm it)
+
+═══════════════════════════════════════════════════════════════════
+STEP 7: START THE SERVER
+═══════════════════════════════════════════════════════════════════
+
+Run:
+
+    python manage.py runserver
+
+You should see:
+    Starting development server at http://127.0.0.1:8000/
+
+═══════════════════════════════════════════════════════════════════
+STEP 8: ACCESS THE APPLICATION
+═══════════════════════════════════════════════════════════════════
+
+Open your web browser and go to:
+
+    http://127.0.0.1:8000/
+
+- Sign up for a new account or login
+- Start managing students and courses!
+
+Admin panel (for advanced management):
+    http://127.0.0.1:8000/admin/
+
+═══════════════════════════════════════════════════════════════════
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════
+
+Problem: Can't connect to MySQL
+Solution:
+  - Make sure MySQL server is running
+  - Check if password in settings.py is correct
+  - Verify database 'studentmgt_db' exists
+
+Problem: mysqlclient won't install
+Solution (Windows):
+  - Install Visual C++ Build Tools, OR
+  - Use pre-compiled wheel from gohlke.pythonlibs
+
+Problem: Port 8000 already in use
+Solution:
+  - Run: python manage.py runserver 8080
+  - Then access: http://127.0.0.1:8080/
+
+Problem: Migration errors
+Solution:
+  - Delete all migration files except __init__.py in students/migrations/
+  - Run: python manage.py makemigrations
+  - Run: python manage.py migrate
+
+═══════════════════════════════════════════════════════════════════
+USAGE TIPS
+═══════════════════════════════════════════════════════════════════
+
+1. First, add some courses from the Courses page
+2. Then add students and assign them to courses
+3. You can edit or delete students/courses anytime
+4. Dashboard shows total counts
+5. Use the admin panel for bulk operations
+
+═══════════════════════════════════════════════════════════════════
+VERIFY MYSQL CONNECTION IN WORKBENCH
+═══════════════════════════════════════════════════════════════════
+
+After running migrations, check in MySQL Workbench:
+
+1. Connect to your server
+2. Select 'studentmgt_db' database
+3. You should see tables like:
+   - students_user
+   - students_student
+   - students_course
+   - django_migrations
+   - auth_*
+
+This confirms Django is connected to MySQL!
+
+═══════════════════════════════════════════════════════════════════
+
+That's it! Your Student Management System is ready to use!
+
+For detailed documentation, see README.md
+
+═══════════════════════════════════════════════════════════════════

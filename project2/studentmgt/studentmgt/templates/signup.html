@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sign Up - Student Management System</title>
+<style>
+/* Minimal styles consistent with index.html */
+body { margin:0; font-family:Segoe UI; background:linear-gradient(135deg,#141e30,#243b55); display:flex; align-items:center; justify-content:center; min-height:100vh; color:white; }
+.box{ background:rgba(255,255,255,0.15); padding:28px; border-radius:12px; width:360px; }
+input,button{ width:100%; padding:10px; margin-bottom:12px; border-radius:8px; border:none; }
+button{ background:#00d4ff; font-weight:700; cursor:pointer; }
+.msg{ display:none; padding:10px; border-radius:8px; margin-bottom:10px; font-size:14px; }
+.msg.success{ background:#e6fffa; color:#065f46; } .msg.error{ background:#ffecec; color:#7f1d1d; }
+.links{text-align:center;color:#fff}
+/* ===== Clean Professional Success Message ===== */
+.msg.success{
+    background: #ffffff;
+    color: #0f172a;
+    border-left: 6px solid #22c55e;
+    font-weight: 500;
+    text-align: left;
+    padding: 14px 16px;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+    animation: slideFade 0.5s ease forwards;
+    position: relative;
+}
+
+/* Success icon circle */
+.msg.success::before{
+    content: "✓";
+    position: absolute;
+    left: -18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    background: #22c55e;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 6px 15px rgba(34,197,94,0.4);
+}
+
+/* Smooth entry animation */
+@keyframes slideFade{
+    from{
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+</style>
+</head>
+<body>
+<div class="box">
+    <h3>Create account</h3>
+    <form method="POST" id="signup-form">
+        {% csrf_token %}
+        <input id="su-name" name="username" type="text" placeholder="Full name" required>
+        <input id="su-email" name="email" type="email" placeholder="Email" required>
+        <input id="su-password" name="password1" type="password" placeholder="Password" required>
+        <input id="su-confirm" name="password2" type="password" placeholder="Confirm password" required>
+        <button type="submit" id="signup-btn">Create Account</button>
+    </form>
+    <div id="signup-msg" class="msg"></div>
+    <div class="links"><a href="{% url 'index' %}" style="color:#00d4ff;text-decoration:none">Back to Login</a></div>
+</div>
+
+<script>
+(function(){
+    const form = document.getElementById('signup-form');
+    const msg = document.getElementById('signup-msg');
+
+    function show(t, type){ 
+        msg.textContent = t; 
+        msg.className = 'msg ' + type; 
+        msg.style.display = 'block'; 
+    }
+    function clear(){ 
+        msg.textContent=''; 
+        msg.style.display='none'; 
+    }
+
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+        clear();
+        
+        const formData = new FormData(form);
+        
+        fetch('{% url "signup" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                show(data.message || 'Account created. You can now log in.', 'success');
+                setTimeout(() => {
+                    window.location.href = data.redirect || '/';
+                }, 1000);
+            } else {
+                show(data.message || 'Registration failed', 'error');
+            }
+        })
+        .catch(error => {
+            show('An error occurred. Please try again.', 'error');
+        });
+    });
+})();
+</script>
+</body>
+</html>

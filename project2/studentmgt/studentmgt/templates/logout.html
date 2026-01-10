@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Logout - Student Management System</title>
+<style>
+body{
+    margin:0;
+    font-family:Segoe UI;
+    background:linear-gradient(135deg,#141e30,#243b55);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    color:white;
+}
+.box{
+    background:rgba(255,255,255,0.15);
+    padding:40px;
+    border-radius:20px;
+    backdrop-filter:blur(12px);
+    width:400px;
+    text-align:center;
+}
+.box h2{
+    margin-bottom:20px;
+}
+.box p{
+    margin-bottom:30px;
+    line-height:1.6;
+}
+.btn{
+    display:inline-block;
+    padding:12px 24px;
+    background:#00d4ff;
+    color:#1f2937;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+    transition:background 0.3s;
+}
+.btn:hover{
+    background:#00b8d4;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+    <h2>✓ Logged Out Successfully</h2>
+    <p>You have been logged out of your account. Thank you for using Student Management System.</p>
+    <a href="{% url 'index' %}" class="btn">Login Again</a>
+</div>
+
+<script>
+// Redirect to login page after 3 seconds
+setTimeout(function() {
+    window.location.href = "{% url 'index' %}";
+}, 3000);
+</script>
+
+</body>
+</html>
